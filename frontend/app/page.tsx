@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import PromptInput from '@/components/PromptInput'
+import ResultsGrid from '@/components/ResultsGrid'
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:8000'
 
@@ -54,11 +55,7 @@ export default function Home() {
           <p className="text-red-400 text-sm">{error}</p>
         )}
 
-        {results.length > 0 && (
-          <pre className="text-xs text-zinc-400 overflow-x-auto">
-            {JSON.stringify(results, null, 2)}
-          </pre>
-        )}
+        {results.length > 0 && <ResultsGrid results={results} />}
       </div>
     </main>
   )
