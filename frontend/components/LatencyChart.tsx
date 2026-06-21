@@ -34,7 +34,7 @@ export default function LatencyChart({ results }: Props) {
           <Tooltip
             contentStyle={{ background: '#27272a', border: 'none', borderRadius: 8 }}
             labelStyle={{ color: '#f4f4f5' }}
-            formatter={(v: number) => [`${v} ms`, 'Latency']}
+            formatter={(v) => [`${Number(v)} ms`, 'Latency']}
           />
           <Bar dataKey="latency" radius={[6, 6, 0, 0]}>
             {data.map(d => (

@@ -78,6 +78,7 @@ export default function Home() {
             amplitude={0.7}
             opacity={0.75}
             glow={2}
+            style={{}}
           />
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">

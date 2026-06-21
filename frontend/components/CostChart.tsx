@@ -34,7 +34,7 @@ export default function CostChart({ results }: Props) {
           <Tooltip
             contentStyle={{ background: '#27272a', border: 'none', borderRadius: 8 }}
             labelStyle={{ color: '#f4f4f5' }}
-            formatter={(v: number) => [`$${v.toFixed(6)}`, 'Cost']}
+            formatter={(v) => [`$${Number(v).toFixed(6)}`, 'Cost']}
           />
           <Bar dataKey="cost" radius={[6, 6, 0, 0]}>
             {data.map(d => (
