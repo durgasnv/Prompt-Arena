@@ -10,7 +10,7 @@ import CostChart from './CostChart'
 interface Props {
   results: ModelResult[]
   isLoading?: boolean
-  modelCount?: number
+  pendingModels?: string[]
 }
 
 function findWinner(results: ModelResult[]): string | null {
@@ -21,72 +21,77 @@ function findWinner(results: ModelResult[]): string | null {
   ).model
 }
 
-export default function ResultsGrid({ results, isLoading, modelCount = 5 }: Props) {
+export default function ResultsGrid({ results, isLoading, pendingModels = [] }: Props) {
   const [index, setIndex] = useState(0)
   const winner = findWinner(results)
-  const total = isLoading ? modelCount : results.length
-  const safeIndex = Math.min(index, total - 1)
+
+  // Items: completed results first, then a skeleton per pending model
+  const total = results.length + (isLoading ? pendingModels.length : 0)
+  const safeIndex = Math.min(index, Math.max(0, total - 1))
 
   const prev = () => setIndex(i => Math.max(0, i - 1))
   const next = () => setIndex(i => Math.min(total - 1, i + 1))
 
+  const currentIsResult = safeIndex < results.length
+
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
 
       {/* Carousel */}
       <div className="relative flex items-center gap-3">
-
-        {/* Left arrow */}
         <button
           onClick={prev}
           disabled={safeIndex === 0}
-          className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full border border-zinc-700 bg-zinc-800 text-zinc-400 hover:text-zinc-100 hover:border-indigo-500 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
+          className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full border border-zinc-700 bg-zinc-800 text-zinc-300 text-lg hover:text-white hover:border-indigo-500 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
           aria-label="Previous"
-        >
-          ‹
-        </button>
+        >‹</button>
 
-        {/* Card slot */}
         <div className="flex-1 min-w-0">
-          {isLoading ? (
-            <SkeletonCard />
-          ) : (
+          {currentIsResult ? (
             <ModelCard
               result={results[safeIndex]}
               isWinner={results[safeIndex]?.model === winner}
             />
+          ) : (
+            <SkeletonCard />
           )}
         </div>
 
-        {/* Right arrow */}
         <button
           onClick={next}
-          disabled={safeIndex === total - 1}
-          className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full border border-zinc-700 bg-zinc-800 text-zinc-400 hover:text-zinc-100 hover:border-indigo-500 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
+          disabled={safeIndex >= total - 1}
+          className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full border border-zinc-700 bg-zinc-800 text-zinc-300 text-lg hover:text-white hover:border-indigo-500 disabled:opacity-25 disabled:cursor-not-allowed transition-colors"
           aria-label="Next"
-        >
-          ›
-        </button>
+        >›</button>
       </div>
 
-      {/* Dot indicators */}
+      {/* Dots */}
       <div className="flex justify-center gap-2">
         {Array.from({ length: total }).map((_, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}
-            className={`w-2 h-2 rounded-full transition-all ${
+            className={`rounded-full transition-all ${
               i === safeIndex
-                ? 'bg-indigo-400 scale-125'
-                : 'bg-zinc-600 hover:bg-zinc-400'
+                ? 'w-4 h-2 bg-indigo-400'
+                : i < results.length
+                ? 'w-2 h-2 bg-zinc-500 hover:bg-zinc-300'
+                : 'w-2 h-2 bg-zinc-700 animate-pulse'
             }`}
             aria-label={`Card ${i + 1}`}
           />
         ))}
       </div>
 
-      {/* Charts — only when results are loaded */}
-      {!isLoading && results.length > 0 && (
+      {/* Progress label while streaming */}
+      {isLoading && (
+        <p className="text-center text-xs text-zinc-500">
+          {results.length} of {results.length + pendingModels.length} models responded…
+        </p>
+      )}
+
+      {/* Charts once we have at least 2 results */}
+      {results.length >= 2 && (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <LatencyChart results={results} />
           <CostChart results={results} />
