@@ -18,10 +18,10 @@ const BlurText = ({
   direction = 'top',
   threshold = 0.1,
   rootMargin = '0px',
-  animationFrom,
-  animationTo,
+  animationFrom = null,
+  animationTo = null,
   easing = t => t,
-  onAnimationComplete,
+  onAnimationComplete = null,
   stepDuration = 0.35
 }) => {
   const elements = animateBy === 'words' ? text.split(' ') : text.split('');
@@ -78,7 +78,7 @@ const BlurText = ({
             initial={fromSnapshot}
             animate={inView ? animateKeyframes : fromSnapshot}
             transition={spanTransition}
-            onAnimationComplete={index === elements.length - 1 ? onAnimationComplete : undefined}
+            onAnimationComplete={index === elements.length - 1 && onAnimationComplete ? onAnimationComplete : undefined}
           >
             {segment === ' ' ? ' ' : segment}
             {animateBy === 'words' && index < elements.length - 1 && ' '}
