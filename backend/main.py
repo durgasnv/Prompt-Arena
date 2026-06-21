@@ -10,14 +10,14 @@ from pydantic import BaseModel
 load_dotenv()
 
 from models.llama4 import call_llama4
-from models.gemini import call_gemini
+from models.gemma import call_gemma
 from models.groq_llama import call_groq
 from models.cohere import call_cohere
 from models.mistral import call_mistral
 
 MODEL_RUNNERS = {
     "llama4": call_llama4,
-    "gemini": call_gemini,
+    "gemma": call_gemma,
     "groq": call_groq,
     "cohere": call_cohere,
     "mistral": call_mistral,
