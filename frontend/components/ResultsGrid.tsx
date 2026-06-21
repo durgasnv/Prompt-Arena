@@ -2,11 +2,14 @@
 
 import type { ModelResult } from '@/app/page'
 import ModelCard from './ModelCard'
+import SkeletonCard from './SkeletonCard'
 import LatencyChart from './LatencyChart'
 import CostChart from './CostChart'
 
 interface Props {
   results: ModelResult[]
+  isLoading?: boolean
+  modelCount?: number
 }
 
 function findWinner(results: ModelResult[]): string | null {
@@ -17,8 +20,18 @@ function findWinner(results: ModelResult[]): string | null {
   ).model
 }
 
-export default function ResultsGrid({ results }: Props) {
+export default function ResultsGrid({ results, isLoading, modelCount = 5 }: Props) {
   const winner = findWinner(results)
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: modelCount }).map((_, i) => (
+          <SkeletonCard key={i} />
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-8">

@@ -65,11 +65,30 @@ async def evaluate(req: EvaluateRequest):
             }
         start = time.perf_counter()
         try:
-            result = await runner(req.prompt)
+            result = await asyncio.wait_for(runner(req.prompt), timeout=30)
             result["latency_ms"] = round((time.perf_counter() - start) * 1000)
             result["model"] = name
             return result
+        except asyncio.TimeoutError:
+            return {
+                "model": name,
+                "response": None,
+                "latency_ms": 30000,
+                "input_tokens": None,
+                "output_tokens": None,
+                "cost_usd": None,
+                "error": "Request timed out after 30s",
+            }
         except Exception as e:
+            error_msg = str(e)
+            if "429" in error_msg or "rate" in error_msg.lower():
+                friendly = "Rate limit hit — try again in a moment"
+            elif "401" in error_msg or "403" in error_msg or "auth" in error_msg.lower() or "key" in error_msg.lower():
+                friendly = "Authentication failed — check your API key"
+            elif "insufficient" in error_msg.lower() or "balance" in error_msg.lower():
+                friendly = "Insufficient API credits"
+            else:
+                friendly = error_msg
             return {
                 "model": name,
                 "response": None,
@@ -77,7 +96,7 @@ async def evaluate(req: EvaluateRequest):
                 "input_tokens": None,
                 "output_tokens": None,
                 "cost_usd": None,
-                "error": str(e),
+                "error": friendly,
             }
 
     results = await asyncio.gather(*[run_model(m) for m in req.models])

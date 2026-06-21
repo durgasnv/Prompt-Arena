@@ -66,7 +66,9 @@ export default function Home() {
           <p className="text-red-400 text-sm">{error}</p>
         )}
 
-        {results.length > 0 && <ResultsGrid results={results} />}
+        {(isLoading || results.length > 0) && (
+          <ResultsGrid results={results} isLoading={isLoading} modelCount={5} />
+        )}
       </div>
     </main>
   )
