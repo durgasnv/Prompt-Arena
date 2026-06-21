@@ -66,6 +66,8 @@ export default function Home() {
             colors={['#1e1b4b', '#312e81', '#4338ca']}
             autoSpeed={0.3}
             autoIntensity={1.8}
+            className=""
+            style={{}}
           />
         </div>
         <div className="absolute inset-0">
@@ -94,7 +96,7 @@ export default function Home() {
       <div className="mx-auto max-w-5xl flex flex-col gap-10 px-4 py-10">
 
         {/* ElectricBorder wraps the prompt form */}
-        <ElectricBorder color="#6366f1" speed={0.8} chaos={0.1} borderRadius={16}>
+        <ElectricBorder color="#6366f1" speed={0.8} chaos={0.1} borderRadius={16} className="" style={{}}>
           <PromptInput onSubmit={handleSubmit} isLoading={isLoading} />
         </ElectricBorder>
 
