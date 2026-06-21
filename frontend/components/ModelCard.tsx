@@ -20,14 +20,23 @@ export default function ModelCard({ result, isWinner }: Props) {
   const { model, response, latency_ms, input_tokens, output_tokens, cost_usd, error } = result
   const label = MODEL_LABELS[model] ?? model
 
+  const glowStyle = error
+    ? { boxShadow: '0 0 24px 4px rgba(239,68,68,0.25)' }
+    : isWinner
+    ? { boxShadow: '0 0 32px 6px rgba(99,102,241,0.4)' }
+    : { boxShadow: '0 0 16px 2px rgba(99,102,241,0.1)' }
+
   return (
-    <div className={`relative flex flex-col gap-3 rounded-2xl border p-5 ${
-      error
-        ? 'border-red-800 bg-zinc-900'
-        : isWinner
-        ? 'border-indigo-500 bg-zinc-800'
-        : 'border-zinc-700 bg-zinc-800'
-    }`}>
+    <div
+      className={`relative flex flex-col gap-3 rounded-2xl border p-6 min-h-64 transition-shadow ${
+        error
+          ? 'border-red-800 bg-zinc-900'
+          : isWinner
+          ? 'border-indigo-500 bg-zinc-800'
+          : 'border-zinc-700 bg-zinc-800'
+      }`}
+      style={glowStyle}
+    >
       {isWinner && <WinnerBadge />}
 
       <div className="flex items-center justify-between">
@@ -40,7 +49,7 @@ export default function ModelCard({ result, isWinner }: Props) {
       {error ? (
         <p className="text-xs text-red-400 leading-relaxed">{error}</p>
       ) : (
-        <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap flex-1">
+        <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap flex-1 overflow-y-auto max-h-72">
           {response}
         </p>
       )}
