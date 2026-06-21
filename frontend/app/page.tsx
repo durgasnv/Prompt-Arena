@@ -64,10 +64,8 @@ export default function Home() {
         <div className="absolute inset-0">
           <LiquidEther
             colors={['#1e1b4b', '#312e81', '#4338ca']}
-            autoDemo={true}
             autoSpeed={0.3}
             autoIntensity={1.8}
-            mouseForce={15}
           />
         </div>
         <div className="absolute inset-0">

@@ -1,7 +1,5 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  transpilePackages: ["ogl", "three", "motion"],
-};
+const nextConfig: NextConfig = {};
 
 export default nextConfig;
