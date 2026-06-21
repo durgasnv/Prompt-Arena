@@ -4,10 +4,12 @@ import { useState } from 'react'
 import PromptInput from '@/components/PromptInput'
 import ResultsGrid from '@/components/ResultsGrid'
 import HistoryPanel, { saveToHistory, type HistoryEntry } from '@/components/HistoryPanel'
-import BlurText from '@/components/BlurText'
-import ElectricBorder from '@/components/ElectricBorder'
-import Strands from '@/components/Strands'
-import LiquidEther from '@/components/LiquidEther'
+import dynamic from 'next/dynamic'
+
+const BlurText = dynamic(() => import('@/components/BlurText'), { ssr: false })
+const ElectricBorder = dynamic(() => import('@/components/ElectricBorder'), { ssr: false })
+const Strands = dynamic(() => import('@/components/Strands'), { ssr: false })
+const LiquidEther = dynamic(() => import('@/components/LiquidEther'), { ssr: false })
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:8000'
 
