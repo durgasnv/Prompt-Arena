@@ -17,7 +17,7 @@ async def call_gemma(prompt: str) -> dict:
     response = await _client.post("/chat/completions", json={
         "model": "google/gemma-4-31b-it:free",
         "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 1024,
+        "max_tokens": 512,
     })
     data = response.json()
     choice = data["choices"][0]

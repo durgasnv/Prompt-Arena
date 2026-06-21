@@ -9,7 +9,7 @@ async def call_cohere(prompt: str) -> dict:
     response = await _client.chat(
         model="command-r-08-2024",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=1024,
+        max_tokens=512,
     )
     input_tokens = response.usage.tokens.input_tokens
     output_tokens = response.usage.tokens.output_tokens

@@ -9,7 +9,7 @@ async def call_llama4(prompt: str) -> dict:
     completion = await _client.chat.completions.create(
         model="meta-llama/llama-4-scout-17b-16e-instruct",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=1024,
+        max_tokens=512,
     )
     choice = completion.choices[0]
     input_tokens = completion.usage.prompt_tokens

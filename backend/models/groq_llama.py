@@ -9,7 +9,7 @@ async def call_groq(prompt: str) -> dict:
     completion = await _client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=1024,
+        max_tokens=512,
     )
     choice = completion.choices[0]
     input_tokens = completion.usage.prompt_tokens

@@ -7,7 +7,6 @@ import HistoryPanel, { saveToHistory, type HistoryEntry } from '@/components/His
 import dynamic from 'next/dynamic'
 
 const BlurText = dynamic(() => import('@/components/BlurText'), { ssr: false })
-const ElectricBorder = dynamic(() => import('@/components/ElectricBorder'), { ssr: false })
 const Strands = dynamic(() => import('@/components/Strands'), { ssr: false })
 const LiquidEther = dynamic(() => import('@/components/LiquidEther'), { ssr: false })
 
@@ -95,10 +94,7 @@ export default function Home() {
 
       <div className="mx-auto max-w-5xl flex flex-col gap-10 px-4 py-10">
 
-        {/* ElectricBorder wraps the prompt form */}
-        <ElectricBorder color="#6366f1" speed={0.8} chaos={0.1} borderRadius={16} className="" style={{}}>
-          <PromptInput onSubmit={handleSubmit} isLoading={isLoading} />
-        </ElectricBorder>
+        <PromptInput onSubmit={handleSubmit} isLoading={isLoading} />
 
         <HistoryPanel onSelect={handleHistorySelect} refreshKey={historyKey} />
 

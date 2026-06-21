@@ -9,7 +9,7 @@ async def call_mistral(prompt: str) -> dict:
     response = await _client.chat.complete_async(
         model="mistral-small-latest",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=1024,
+        max_tokens=512,
     )
     choice = response.choices[0]
     input_tokens = response.usage.prompt_tokens
