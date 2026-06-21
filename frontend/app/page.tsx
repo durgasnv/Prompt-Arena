@@ -4,6 +4,10 @@ import { useState } from 'react'
 import PromptInput from '@/components/PromptInput'
 import ResultsGrid from '@/components/ResultsGrid'
 import HistoryPanel, { saveToHistory, type HistoryEntry } from '@/components/HistoryPanel'
+import BlurText from '@/components/BlurText'
+import ElectricBorder from '@/components/ElectricBorder'
+import Strands from '@/components/Strands'
+import LiquidEther from '@/components/LiquidEther'
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:8000'
 
@@ -51,20 +55,51 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-900 text-zinc-100 px-4 py-10">
-      <div className="mx-auto max-w-5xl flex flex-col gap-10">
-        <header className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold tracking-tight">Prompt Arena</h1>
-          <p className="text-zinc-400 text-sm">Run once. Compare everything.</p>
-        </header>
+    <main className="min-h-screen bg-zinc-900 text-zinc-100">
 
-        <PromptInput onSubmit={handleSubmit} isLoading={isLoading} />
+      {/* Hero: LiquidEther bg + Strands overlay + BlurText title */}
+      <div className="relative w-full h-56 overflow-hidden">
+        <div className="absolute inset-0">
+          <LiquidEther
+            colors={['#1e1b4b', '#312e81', '#4338ca']}
+            autoDemo={true}
+            autoSpeed={0.3}
+            autoIntensity={1.8}
+            mouseForce={15}
+          />
+        </div>
+        <div className="absolute inset-0">
+          <Strands
+            colors={['#6366f1', '#8b5cf6', '#06b6d4']}
+            count={3}
+            speed={0.4}
+            amplitude={0.7}
+            opacity={0.75}
+            glow={2}
+          />
+        </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+          <BlurText
+            text="Prompt Arena"
+            delay={100}
+            animateBy="words"
+            direction="top"
+            className="text-4xl font-bold tracking-tight text-white drop-shadow-lg"
+          />
+          <p className="text-zinc-300 text-sm drop-shadow">Run once. Compare everything.</p>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-5xl flex flex-col gap-10 px-4 py-10">
+
+        {/* ElectricBorder wraps the prompt form */}
+        <ElectricBorder color="#6366f1" speed={0.8} chaos={0.1} borderRadius={16}>
+          <PromptInput onSubmit={handleSubmit} isLoading={isLoading} />
+        </ElectricBorder>
 
         <HistoryPanel onSelect={handleHistorySelect} refreshKey={historyKey} />
 
-        {error && (
-          <p className="text-red-400 text-sm">{error}</p>
-        )}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
 
         {(isLoading || results.length > 0) && (
           <ResultsGrid results={results} isLoading={isLoading} modelCount={5} />
