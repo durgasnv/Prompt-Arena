@@ -10,7 +10,7 @@ import CostChart from './CostChart'
 interface Props {
   results: ModelResult[]
   isLoading?: boolean
-  pendingModels?: string[]
+  modelCount?: number
 }
 
 function findWinner(results: ModelResult[]): string | null {
@@ -21,18 +21,15 @@ function findWinner(results: ModelResult[]): string | null {
   ).model
 }
 
-export default function ResultsGrid({ results, isLoading, pendingModels = [] }: Props) {
+export default function ResultsGrid({ results, isLoading, modelCount = 5 }: Props) {
   const [index, setIndex] = useState(0)
   const winner = findWinner(results)
 
-  // Items: completed results first, then a skeleton per pending model
-  const total = results.length + (isLoading ? pendingModels.length : 0)
+  const total = isLoading ? modelCount : results.length
   const safeIndex = Math.min(index, Math.max(0, total - 1))
 
   const prev = () => setIndex(i => Math.max(0, i - 1))
   const next = () => setIndex(i => Math.min(total - 1, i + 1))
-
-  const currentIsResult = safeIndex < results.length
 
   return (
     <div className="flex flex-col gap-6">
@@ -47,13 +44,13 @@ export default function ResultsGrid({ results, isLoading, pendingModels = [] }: 
         >‹</button>
 
         <div className="flex-1 min-w-0">
-          {currentIsResult ? (
+          {isLoading ? (
+            <SkeletonCard />
+          ) : (
             <ModelCard
               result={results[safeIndex]}
               isWinner={results[safeIndex]?.model === winner}
             />
-          ) : (
-            <SkeletonCard />
           )}
         </div>
 
@@ -74,24 +71,15 @@ export default function ResultsGrid({ results, isLoading, pendingModels = [] }: 
             className={`rounded-full transition-all ${
               i === safeIndex
                 ? 'w-4 h-2 bg-indigo-400'
-                : i < results.length
-                ? 'w-2 h-2 bg-zinc-500 hover:bg-zinc-300'
-                : 'w-2 h-2 bg-zinc-700 animate-pulse'
+                : 'w-2 h-2 bg-zinc-600 hover:bg-zinc-300'
             }`}
             aria-label={`Card ${i + 1}`}
           />
         ))}
       </div>
 
-      {/* Progress label while streaming */}
-      {isLoading && (
-        <p className="text-center text-xs text-zinc-500">
-          {results.length} of {results.length + pendingModels.length} models responded…
-        </p>
-      )}
-
-      {/* Charts once we have at least 2 results */}
-      {results.length >= 2 && (
+      {/* Charts */}
+      {!isLoading && results.length >= 2 && (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <LatencyChart results={results} />
           <CostChart results={results} />

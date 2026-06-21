@@ -24,7 +24,6 @@ export interface ModelResult {
 
 export default function Home() {
   const [results, setResults] = useState<ModelResult[]>([])
-  const [pendingModels, setPendingModels] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [historyKey, setHistoryKey] = useState(0)
@@ -33,8 +32,6 @@ export default function Home() {
     setIsLoading(true)
     setError(null)
     setResults([])
-    setPendingModels(models)
-    const accumulated: ModelResult[] = []
     try {
       const res = await fetch(`${BACKEND}/evaluate`, {
         method: 'POST',
@@ -42,36 +39,14 @@ export default function Home() {
         body: JSON.stringify({ prompt, models }),
       })
       if (!res.ok) throw new Error(`Server error: ${res.status}`)
-      const reader = res.body!.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() ?? ''
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue
-          const payload = line.slice(6).trim()
-          if (payload === '[DONE]') {
-            saveToHistory({ prompt, models, results: accumulated })
-            setHistoryKey(k => k + 1)
-            continue
-          }
-          try {
-            const result = JSON.parse(payload) as ModelResult
-            accumulated.push(result)
-            setResults([...accumulated])
-            setPendingModels(models.filter(m => !accumulated.find(r => r.model === m)))
-          } catch {}
-        }
-      }
+      const data = await res.json()
+      setResults(data.results)
+      saveToHistory({ prompt, models, results: data.results })
+      setHistoryKey(k => k + 1)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsLoading(false)
-      setPendingModels([])
     }
   }
 
@@ -126,7 +101,7 @@ export default function Home() {
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
         {(isLoading || results.length > 0) && (
-          <ResultsGrid results={results} isLoading={isLoading} pendingModels={pendingModels} />
+          <ResultsGrid results={results} isLoading={isLoading} modelCount={5} />
         )}
       </div>
     </main>
