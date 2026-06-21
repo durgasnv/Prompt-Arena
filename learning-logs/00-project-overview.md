@@ -11,7 +11,7 @@
 |---|------|--------|
 | 01 | Project structure setup (folders, git, env files) | pending |
 | 02 | FastAPI backend scaffold + /evaluate endpoint | pending |
-| 03 | Integrate Gemma 2 9B via Groq API | pending |
+| 03 | Integrate Llama 4 Scout via Groq API | pending |
 | 04 | Integrate Gemini (Google AI Studio) API | pending |
 | 05 | Integrate Llama via Groq API | pending |
 | 06 | Integrate Cohere (Command R) API | pending |
@@ -36,7 +36,7 @@
 
 | Model | Provider | Free Tier |
 |-------|----------|-----------|
-| Gemma 2 9B | Groq | Yes |
+| Llama 4 Scout | Groq | Yes |
 | Gemini 1.5 Flash | Google AI Studio | Yes |
 | Llama 3 70B | Groq | Yes |
 | Command R | Cohere | Yes |

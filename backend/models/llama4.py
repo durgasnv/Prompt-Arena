@@ -5,9 +5,9 @@ from pricing import estimate_cost
 _client = AsyncGroq(api_key=os.environ.get("GROQ_API_KEY"))
 
 
-async def call_groq(prompt: str) -> dict:
+async def call_llama4(prompt: str) -> dict:
     completion = await _client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="meta-llama/llama-4-scout-17b-16e-instruct",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=1024,
     )
@@ -18,6 +18,6 @@ async def call_groq(prompt: str) -> dict:
         "response": choice.message.content,
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
-        "cost_usd": estimate_cost("groq", input_tokens, output_tokens),
+        "cost_usd": estimate_cost("llama4", input_tokens, output_tokens),
         "error": None,
     }

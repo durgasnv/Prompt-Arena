@@ -7,7 +7,7 @@ _client = cohere.AsyncClientV2(api_key=os.environ.get("COHERE_API_KEY"))
 
 async def call_cohere(prompt: str) -> dict:
     response = await _client.chat(
-        model="command-r",
+        model="command-r-08-2024",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=1024,
     )

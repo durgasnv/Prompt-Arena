@@ -1,5 +1,5 @@
 import os
-from mistralai import Mistral
+from mistralai.client import Mistral
 from pricing import estimate_cost
 
 _client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY"))
