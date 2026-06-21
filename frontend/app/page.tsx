@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import PromptInput from '@/components/PromptInput'
 import ResultsGrid from '@/components/ResultsGrid'
+import HistoryPanel, { saveToHistory, type HistoryEntry } from '@/components/HistoryPanel'
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:8000'
 
@@ -20,6 +21,7 @@ export default function Home() {
   const [results, setResults] = useState<ModelResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [historyKey, setHistoryKey] = useState(0)
 
   async function handleSubmit(prompt: string, models: string[]) {
     setIsLoading(true)
@@ -34,11 +36,18 @@ export default function Home() {
       if (!res.ok) throw new Error(`Server error: ${res.status}`)
       const data = await res.json()
       setResults(data.results)
+      saveToHistory({ prompt, models, results: data.results })
+      setHistoryKey(k => k + 1)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsLoading(false)
     }
+  }
+
+  function handleHistorySelect(entry: HistoryEntry) {
+    setResults(entry.results)
+    setError(null)
   }
 
   return (
@@ -50,6 +59,8 @@ export default function Home() {
         </header>
 
         <PromptInput onSubmit={handleSubmit} isLoading={isLoading} />
+
+        <HistoryPanel onSelect={handleHistorySelect} refreshKey={historyKey} />
 
         {error && (
           <p className="text-red-400 text-sm">{error}</p>
