@@ -25,14 +25,25 @@ export default function ResultsGrid({ results, isLoading, modelCount = 5 }: Prop
   const [index, setIndex] = useState(0)
   const winner = findWinner(results)
 
-  const total = isLoading ? modelCount : results.length
+  // Slots: arrived results first, then skeleton placeholders for pending ones
+  const pendingCount = isLoading ? Math.max(0, modelCount - results.length) : 0
+  const total = results.length + pendingCount
   const safeIndex = Math.min(index, Math.max(0, total - 1))
 
   const prev = () => setIndex(i => Math.max(0, i - 1))
   const next = () => setIndex(i => Math.min(total - 1, i + 1))
 
+  const currentIsResult = safeIndex < results.length
+
   return (
     <div className="flex flex-col gap-6">
+
+      {/* Progress label while loading */}
+      {isLoading && (
+        <p className="text-xs text-zinc-500 text-center">
+          {results.length} / {modelCount} models done…
+        </p>
+      )}
 
       {/* Carousel */}
       <div className="relative flex items-center gap-3">
@@ -44,13 +55,13 @@ export default function ResultsGrid({ results, isLoading, modelCount = 5 }: Prop
         >‹</button>
 
         <div className="flex-1 min-w-0">
-          {isLoading ? (
-            <SkeletonCard />
-          ) : (
+          {currentIsResult ? (
             <ModelCard
               result={results[safeIndex]}
               isWinner={results[safeIndex]?.model === winner}
             />
+          ) : (
+            <SkeletonCard />
           )}
         </div>
 
@@ -62,24 +73,29 @@ export default function ResultsGrid({ results, isLoading, modelCount = 5 }: Prop
         >›</button>
       </div>
 
-      {/* Dots */}
+      {/* Dots: filled = result arrived, hollow = still loading */}
       <div className="flex justify-center gap-2">
-        {Array.from({ length: total }).map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setIndex(i)}
-            className={`rounded-full transition-all ${
-              i === safeIndex
-                ? 'w-4 h-2 bg-indigo-400'
-                : 'w-2 h-2 bg-zinc-600 hover:bg-zinc-300'
-            }`}
-            aria-label={`Card ${i + 1}`}
-          />
-        ))}
+        {Array.from({ length: total }).map((_, i) => {
+          const arrived = i < results.length
+          return (
+            <button
+              key={i}
+              onClick={() => setIndex(i)}
+              className={`rounded-full transition-all ${
+                i === safeIndex
+                  ? 'w-4 h-2 bg-indigo-400'
+                  : arrived
+                  ? 'w-2 h-2 bg-zinc-400 hover:bg-zinc-200'
+                  : 'w-2 h-2 bg-zinc-700 animate-pulse'
+              }`}
+              aria-label={`Card ${i + 1}`}
+            />
+          )
+        })}
       </div>
 
-      {/* Charts */}
-      {!isLoading && results.length >= 2 && (
+      {/* Charts — show once at least 2 results have arrived */}
+      {results.length >= 2 && (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <LatencyChart results={results} />
           <CostChart results={results} />

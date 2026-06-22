@@ -11,6 +11,7 @@ const Strands = dynamic(() => import('@/components/Strands'), { ssr: false })
 const LiquidEther = dynamic(() => import('@/components/LiquidEther'), { ssr: false })
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:8000'
+const POLL_INTERVAL_MS = 800
 
 export interface ModelResult {
   model: string
@@ -27,11 +28,14 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [historyKey, setHistoryKey] = useState(0)
+  const [expectedCount, setExpectedCount] = useState(0)
 
   async function handleSubmit(prompt: string, models: string[]) {
     setIsLoading(true)
     setError(null)
     setResults([])
+    setExpectedCount(models.length)
+
     try {
       const res = await fetch(`${BACKEND}/evaluate`, {
         method: 'POST',
@@ -39,9 +43,23 @@ export default function Home() {
         body: JSON.stringify({ prompt, models }),
       })
       if (!res.ok) throw new Error(`Server error: ${res.status}`)
-      const data = await res.json()
-      setResults(data.results)
-      saveToHistory({ prompt, models, results: data.results })
+      const { job_id } = await res.json()
+
+      // Poll until done
+      let finalResults: ModelResult[] = []
+      while (true) {
+        await new Promise(r => setTimeout(r, POLL_INTERVAL_MS))
+        const poll = await fetch(`${BACKEND}/evaluate/${job_id}`)
+        if (!poll.ok) throw new Error(`Poll error: ${poll.status}`)
+        const data: { results: ModelResult[]; done: boolean } = await poll.json()
+
+        setResults([...data.results])
+        finalResults = data.results
+
+        if (data.done) break
+      }
+
+      saveToHistory({ prompt, models, results: finalResults })
       setHistoryKey(k => k + 1)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -52,6 +70,7 @@ export default function Home() {
 
   function handleHistorySelect(entry: HistoryEntry) {
     setResults(entry.results)
+    setExpectedCount(entry.results.length)
     setError(null)
   }
 
@@ -101,7 +120,7 @@ export default function Home() {
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
         {(isLoading || results.length > 0) && (
-          <ResultsGrid results={results} isLoading={isLoading} modelCount={5} />
+          <ResultsGrid results={results} isLoading={isLoading} modelCount={expectedCount} />
         )}
       </div>
     </main>
