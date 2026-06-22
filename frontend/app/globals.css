@@ -1,26 +1,78 @@
 @import "tailwindcss";
 
+@property --electric-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #09090b;
+  --card: #141417;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-foreground: #f4f4f5;
+  --font-sans: var(--font-manrope);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: #f4f4f5;
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}
+
+/* Electric border shimmer */
+@keyframes electric-rotate {
+  to { --electric-angle: 360deg; }
+}
+
+.electric-border-wrap {
+  background: conic-gradient(
+    from var(--electric-angle),
+    transparent 0%,
+    transparent 60%,
+    #8b5cf6 75%,
+    #6366f1 88%,
+    transparent 100%
+  );
+  animation: electric-rotate 2.5s linear infinite;
+}
+
+/* Blob float animations */
+@keyframes blob-float-1 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.06); }
+  66% { transform: translate(-25px, 20px) scale(0.94); }
+}
+
+@keyframes blob-float-2 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(-35px, 25px) scale(1.08); }
+  66% { transform: translate(25px, -20px) scale(0.92); }
+}
+
+@keyframes blob-float-3 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(20px, 30px) scale(1.05); }
+}
+
+/* Word blur-in animation */
+@keyframes word-blur-in {
+  from {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0px);
+  }
+}
+
+.word-blur-in {
+  animation: word-blur-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

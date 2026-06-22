@@ -6,10 +6,18 @@ import WinnerBadge from './WinnerBadge'
 
 const MODEL_LABELS: Record<string, string> = {
   llama4:  'Llama 4 Scout',
-  gemma:   'Gemma 4 31B',
+  gemma:   'Gemma 2 9B',
   groq:    'Llama 3.3 70B',
   cohere:  'Command R',
   mistral: 'Mistral Small',
+}
+
+const MODEL_DOTS: Record<string, string> = {
+  llama4:  '#f97316',
+  gemma:   '#22c55e',
+  groq:    '#a78bfa',
+  cohere:  '#38bdf8',
+  mistral: '#f59e0b',
 }
 
 interface Props {
@@ -20,6 +28,7 @@ interface Props {
 export default function ModelCard({ result, isWinner }: Props) {
   const { model, response, latency_ms, input_tokens, output_tokens, cost_usd, error } = result
   const label = MODEL_LABELS[model] ?? model
+  const dot = MODEL_DOTS[model] ?? '#6366f1'
   const [copied, setCopied] = useState(false)
 
   const copy = () => {
@@ -30,41 +39,60 @@ export default function ModelCard({ result, isWinner }: Props) {
     })
   }
 
-  const glowStyle = error
-    ? { boxShadow: '0 0 24px 4px rgba(239,68,68,0.25)' }
+  const borderColor = error
+    ? 'rgba(248,113,113,0.38)'
     : isWinner
-    ? { boxShadow: '0 0 32px 6px rgba(99,102,241,0.45)' }
-    : { boxShadow: '0 0 16px 2px rgba(99,102,241,0.1)' }
+    ? 'rgba(99,102,241,0.55)'
+    : 'rgba(39,39,42,0.8)'
+
+  const glow = error
+    ? '0 0 30px rgba(248,113,113,0.18), inset 0 1px 0 rgba(248,113,113,0.04)'
+    : isWinner
+    ? '0 0 48px rgba(99,102,241,0.28), 0 0 96px rgba(99,102,241,0.1), inset 0 1px 0 rgba(99,102,241,0.08)'
+    : '0 0 24px rgba(99,102,241,0.05), inset 0 1px 0 rgba(255,255,255,0.02)'
 
   return (
     <div
-      className={`relative flex flex-col gap-4 rounded-2xl border p-6 min-h-72 transition-shadow ${
-        error
-          ? 'border-red-800/60 bg-zinc-900'
-          : isWinner
-          ? 'border-indigo-500/70 bg-zinc-800/90'
-          : 'border-zinc-700/60 bg-zinc-800/80'
-      }`}
-      style={glowStyle}
+      className="relative flex flex-col gap-4 rounded-2xl border p-6 min-h-72 transition-all duration-300"
+      style={{ background: '#141417', borderColor, boxShadow: glow }}
     >
       {isWinner && <WinnerBadge />}
 
       {/* Header */}
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-base font-bold text-zinc-100 tracking-tight">{label}</span>
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between gap-2 mt-1">
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-2 h-2 rounded-full flex-shrink-0"
+            style={{ background: dot, boxShadow: `0 0 6px ${dot}88` }}
+          />
+          <span
+            className="text-sm font-bold text-zinc-100 tracking-tight"
+            style={{ fontFamily: 'var(--font-space-grotesk)' }}
+          >
+            {label}
+          </span>
+        </div>
+        <div className="flex items-center gap-2.5">
           {latency_ms != null && (
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-              isWinner ? 'bg-indigo-500/20 text-indigo-300' : 'bg-zinc-700 text-zinc-400'
-            }`}>
+            <span
+              className="text-xs font-medium px-2.5 py-0.5 rounded-full"
+              style={{
+                fontFamily: 'var(--font-jetbrains-mono)',
+                background: isWinner ? 'rgba(99,102,241,0.18)' : 'rgba(39,39,42,0.9)',
+                color: isWinner ? '#a5b4fc' : '#52525b',
+              }}
+            >
               {latency_ms} ms
             </span>
           )}
           {response && (
             <button
               onClick={copy}
-              className="text-xs text-zinc-500 hover:text-zinc-200 transition-colors"
-              title="Copy response"
+              className="text-xs transition-colors"
+              style={{
+                color: copied ? '#34d399' : '#3f3f46',
+                fontFamily: 'var(--font-manrope)',
+              }}
             >
               {copied ? '✓ Copied' : 'Copy'}
             </button>
@@ -74,12 +102,20 @@ export default function ModelCard({ result, isWinner }: Props) {
 
       {/* Body */}
       {error ? (
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-sm text-red-400 leading-relaxed text-center px-4">{error}</p>
+        <div className="flex-1 flex items-center justify-center px-4">
+          <p
+            className="text-sm text-center leading-relaxed"
+            style={{ color: '#f87171', fontFamily: 'var(--font-manrope)' }}
+          >
+            {error}
+          </p>
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto max-h-64 scrollbar-thin">
-          <p className="text-sm text-zinc-300 leading-7 whitespace-pre-wrap font-mono">
+        <div className="flex-1 overflow-y-auto max-h-64">
+          <p
+            className="text-zinc-300 whitespace-pre-wrap leading-7"
+            style={{ fontFamily: 'var(--font-jetbrains-mono)', fontSize: '0.8rem' }}
+          >
             {response}
           </p>
         </div>
@@ -87,12 +123,15 @@ export default function ModelCard({ result, isWinner }: Props) {
 
       {/* Footer stats */}
       {!error && (
-        <div className="flex gap-5 border-t border-zinc-700/50 pt-3 mt-auto">
-          <Stat label="Tokens in" value={input_tokens ?? '—'} />
+        <div
+          className="flex gap-6 border-t pt-3.5 mt-auto"
+          style={{ borderColor: 'rgba(39,39,42,0.8)' }}
+        >
+          <Stat label="Tokens in"  value={input_tokens  ?? '—'} />
           <Stat label="Tokens out" value={output_tokens ?? '—'} />
           <Stat
             label="Cost"
-            value={cost_usd != null ? `$${cost_usd.toFixed(6)}` : '—'}
+            value={cost_usd != null ? (cost_usd === 0 ? 'Free' : `$${cost_usd.toFixed(6)}`) : '—'}
             highlight={cost_usd === 0}
           />
         </div>
@@ -103,9 +142,22 @@ export default function ModelCard({ result, isWinner }: Props) {
 
 function Stat({ label, value, highlight }: { label: string; value: string | number; highlight?: boolean }) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-[10px] uppercase tracking-widest text-zinc-500">{label}</span>
-      <span className={`text-xs font-semibold ${highlight ? 'text-emerald-400' : 'text-zinc-300'}`}>{value}</span>
+    <div className="flex flex-col gap-1">
+      <span
+        className="uppercase tracking-widest"
+        style={{ fontSize: '9px', color: '#3f3f46', fontFamily: 'var(--font-jetbrains-mono)' }}
+      >
+        {label}
+      </span>
+      <span
+        className="text-xs font-semibold"
+        style={{
+          color: highlight ? '#34d399' : '#71717a',
+          fontFamily: 'var(--font-jetbrains-mono)',
+        }}
+      >
+        {value}
+      </span>
     </div>
   )
 }
