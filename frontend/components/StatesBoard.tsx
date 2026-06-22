@@ -24,24 +24,13 @@ const WINNER: ModelResult = {
 }
 
 const ERROR: ModelResult = {
-  model: 'cohere',
+  model: 'mistral',
   response: null,
   latency_ms: null,
   input_tokens: null,
   output_tokens: null,
   cost_usd: null,
-  error: 'Rate limit hit — try again in a moment',
-}
-
-function Note({ children }: { children: React.ReactNode }) {
-  return (
-    <p
-      className="text-[11px] leading-relaxed text-center px-1"
-      style={{ color: '#3f3f46', fontFamily: 'var(--font-manrope)' }}
-    >
-      {children}
-    </p>
-  )
+  error: 'Authentication failed — check your API key',
 }
 
 export default function StatesBoard() {
@@ -60,18 +49,9 @@ export default function StatesBoard() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="flex flex-col gap-3">
-          <ModelCard result={NORMAL} isWinner={false} />
-          <Note>Normal — subtle indigo glow, latency pill, JetBrains Mono response, token + cost footer</Note>
-        </div>
-        <div className="flex flex-col gap-3">
-          <ModelCard result={WINNER} isWinner />
-          <Note>Winner — gold ★ badge, strong indigo border glow, indigo-tinted latency pill</Note>
-        </div>
-        <div className="flex flex-col gap-3">
-          <ModelCard result={ERROR} isWinner={false} />
-          <Note>Error — red border + glow, centered message, stats omitted</Note>
-        </div>
+        <ModelCard result={NORMAL} isWinner={false} />
+        <ModelCard result={WINNER} isWinner />
+        <ModelCard result={ERROR} isWinner={false} />
       </div>
     </section>
   )

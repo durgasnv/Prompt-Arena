@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 import type { ModelResult } from '@/app/page'
 
 const MODEL_LABELS: Record<string, string> = {
-  llama4: 'Llama 4', gemma: 'Gemma 2', groq: 'Llama 3.3', cohere: 'Cmd R', mistral: 'Mistral',
+  llama4: 'Llama 4', gemma: 'Llama 3.1', groq: 'Llama 3.3', cohere: 'Cmd R', mistral: 'Mistral',
 }
 
 export default function CostChart({ results }: { results: ModelResult[] }) {

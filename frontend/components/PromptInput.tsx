@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 const MODELS = [
   { id: 'llama4',  label: 'Llama 4 Scout' },
-  { id: 'gemma',   label: 'Gemma 2 9B'    },
+  { id: 'gemma',   label: 'Llama 3.1 8B'  },
   { id: 'groq',    label: 'Llama 3.3 70B' },
   { id: 'cohere',  label: 'Command R'     },
   { id: 'mistral', label: 'Mistral Small' },

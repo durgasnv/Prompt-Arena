@@ -6,7 +6,7 @@ import WinnerBadge from './WinnerBadge'
 
 const MODEL_LABELS: Record<string, string> = {
   llama4:  'Llama 4 Scout',
-  gemma:   'Gemma 2 9B',
+  gemma:   'Llama 3.1 8B',
   groq:    'Llama 3.3 70B',
   cohere:  'Command R',
   mistral: 'Mistral Small',

@@ -5,7 +5,7 @@ import LatencyChart from './LatencyChart'
 import CostChart from './CostChart'
 
 const MODEL_LABELS: Record<string, string> = {
-  llama4: 'Llama 4 Scout', gemma: 'Gemma 2 9B', groq: 'Llama 3.3 70B',
+  llama4: 'Llama 4 Scout', gemma: 'Llama 3.1 8B', groq: 'Llama 3.3 70B',
   cohere: 'Command R', mistral: 'Mistral Small',
 }
 
